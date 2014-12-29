@@ -1,0 +1,191 @@
+Analyze My Week Activities
+
+SetDirectory[NotebookDirectory[]]
+
+"E:\\GK\\stat\\stat"
+
+"C:\\USERS\\Guokr\\Documents\\GitHub\\WhyMathematica\\DataVisualization\\\
+Guokr\\WeekLog"
+
+"C:\\USERS\\Guokr\\Documents\\GitHub\\WhyMathematica\\DataVisualization\\\
+Guokr\\WeekLog"
+
+Variables
+
+weekLogNum = 18;
+queGitSource = "0930.txt";
+
+Results
+
+weeklogQTable = 
+ Dynamic[Grid[gridTable, Frame -> All, 
+    Background -> {{3 -> LightOrange, 5 -> LightOrange}, {1 -> LightBlue, 
+       2 -> LightBlue, 3 -> LightGreen}}]] // Quiet
+
+\!\(\*
+DynamicBox[ToBoxes[
+Grid[$CellContext`gridTable, Frame -> All, 
+     Background -> {{3 -> LightOrange, 5 -> LightOrange}, {
+       1 -> LightBlue, 2 -> LightBlue, 3 -> LightGreen}}], StandardForm],
+ImageSizeCache->{893., {26., 13.}}]\)
+
+Analyze My Questions | Code
+
+Data Import
+
+urlList = StringSplit[StringReplace[Import[queGitSource], " " -> ""], ","];
+
+len = Length[urlList]
+
+16
+
+rawData = Table[Import[StringTrim[urlList[[i]]], "XMLObject"], {i, 1, len}];
+
+Question Data Analysis
+
+dataSourceQID = 
+ Table[Cases[rawData[[i]], 
+   XMLElement[
+     "a", {"shape" -> "rect", "class" -> "cmts-num", 
+      "href" -> "javascript: void 0;", "data-question" -> "1", 
+      "data-id" -> id_, "data-operation" -> "control"}, {wtf_}] :> id, 
+   Infinity], {i, 1, len}]
+dataSourceQDate = 
+ Table[StringSplit[
+    StringSplit[
+      Cases[rawData[[i]], 
+        XMLElement["span", {"class" -> "post-date"}, {date_}] :> date, 
+        Infinity][[1]], "  "][[2]]][[1]], {i, 1, len}]
+dataSourceQTitle = 
+ Table[Cases[rawData[[i]], 
+   XMLElement["meta", {"name" -> "Description", "content" -> title_}, {}] :> 
+    title, Infinity], {i, 1, len}]
+
+{{"502922"}, {"502996"}, {"502992"}, {"502552"}, {"482235"}, {"502960"}, \
+{"457316"}, {"419680"}, {"502981"}, {"502982"}, {"502998"}, {"502726"}, \
+{"503010"}, {"503014"}, {"503034"}, {"503038"}}
+
+{"2013-09-30", "2013-09-30", "2013-09-30", "2013-09-28", "2013-07-06", \
+"2013-09-30", "2013-04-15", "2012-12-29", "2013-09-30", "2013-09-30", \
+"2013-09-30", "2013-09-29", "2013-09-30", "2013-09-30", "2013-09-30", \
+"2013-09-30"}
+
+{{"为什么这种图看起来会有种看时装发布会的感觉？"}, {"题跋对于书画作品来说有多大意义？\[InvisibleSpace]"}, \
+{"胶状银是什么？为什么喝多了全身会变成蓝色？"}, {"为什么很多公式都有常数？"}, {"为什么体脂最容易囤积在腹部区域，而不是其他部位？"}, \
+{"三国中，刮骨疗伤写的靠谱吗？"}, \
+{"\[OpenCurlyDoubleQuote]声波支付\[CloseCurlyDoubleQuote]售货机是什么原理？"}, \
+{"如何调节合适的自来水管道的供水压？"}, {"在犀牛角里注入毒素和荧光剂，并安装了GPS会毒害犀牛吗？"}, \
+{"跳楼自杀砸死路人要负什么法律责任？"}, {"旱魃究竟是什么？"}, {"地下发电站有什么特别需要注意的问题？"}, \
+{"台风会对鲸豚的活动造成什么影响？"}, {"有哪些可以极大改善人们生活却遭到人们反对的举措或政策？"}, {"可口可乐的品牌价值为什么那么高？"}, \
+{"十一期间见家长要注意什么？双方家庭隔得很远，地区差异很大的有哪些要讲究的？"}}
+
+(*
+XMLElement["a",{"shape"->"rect","class"->"answer-digg-up","href"->"javascript:\
+void 0;","data-operation"->"support","data-id"->"498171","data-login"->"#\
+answer498171","title"->"支持（+1）"},{"5"}],"\\n                \
+",XMLElement["a",{"shape"->"rect","class"->"answer-digg-dw","href"->\
+"javascript:void \
+0;","data-operation"->"oppose","data-id"->"498171","data-login"->"#\
+answer498171","title"->"反对(-1)"},{"0"}],
+*)
+
+dataSourceA = 
+  Table[Cases[rawData[[i]], 
+    XMLElement[
+      "a", {"shape" -> "rect", "class" -> "answer-digg-up", 
+       "href" -> "javascript:void 0;", "data-operation" -> "support", 
+       "data-id" -> labela_, "data-login" -> datalogin_, 
+       "title" -> "支持（+1）"}, {labelb_}] :> labelb, Infinity], {i, 1, len}];
+
+(*
+XMLElement["span",{"class"->"post-date"},{"发表于  2013-04-28 09:56"}]
+XMLElement["a",{"shape"->"rect","class"->"cmts-num","href"->"javascript: void \
+0;","data-question"->"1","data-id"->"460295","data-operation"->"control"},{\
+"添加讨论"}]
+XMLElement["meta",{"name"->"Description","content"->"薛定谔的猫重要在哪里？"},{}]
+*)
+
+lenTotal = Length[DeleteCases[dataSourceA, {}]]
+
+7
+
+This is wrong! Find out which two are left off.
+
+noAnsPos = Position[dataSourceA, {}]
+
+{{2}, {4}, {5}, {7}, {8}, {11}, {12}, {13}, {15}}
+
+Extract[urlList, noAnsPos]
+
+{"
+ http://www.guokr.com/question/502996/	", "
+ http://www.guokr.com/question/502552/	", "
+ http://www.guokr.com/question/482235/	", "
+ http://www.guokr.com/question/457316/	", "
+ http://www.guokr.com/question/419680/	", "
+ http://www.guokr.com/question/502998/", "
+ http://www.guokr.com/question/502726/", "
+ http://www.guokr.com/question/503010/", "
+ http://www.guokr.com/question/503034/"}
+
+ansTotal = Length[Flatten[dataSourceA]]
+
+9
+
+supTotal = N[Total[ToExpression[Flatten[dataSourceA]]]]
+
+2.
+
+avgAnsPerQ = N[Length[Flatten[dataSourceA]]/len];
+
+修改了下面这个grid
+
+gridTable = Prepend[Prepend[Prepend[
+     Sort[Table[{dataSourceQID[[i]][[1]], dataSourceQDate[[i]], 
+        Length[dataSourceA[[i]]], dataSourceA[[i]], 
+        dataSourceQTitle[[i]][[1]], urlList[[i]]}, {i, 1, 
+        len}], #1[[3]] > #2[[3]] &]
+     , {"Question ID", "Post Date", "Answers", "Answer Support", 
+      "Question Title", "Qustion Link"}], {"问题数:" <> ToString[len] <> ";" <> 
+      "有回答的问题:" <> ToString[lenTotal] <> ";" <> "回答数:" <> ToString[ansTotal] <>
+       ";" <> "总支持：" <> ToString[supTotal] <> ";" <> "平均回答数：" <> 
+      ToString[avgAnsPerQ], SpanFromLeft, SpanFromLeft}], {"WeekLog" <> 
+     ToString[weekLogNum] <> ":" <> "Questions" <> "(" <> 
+     DateString[{"Day", "-", "Month", "-", "YearShort"}] <> ")", 
+    SpanFromLeft}];
+
+Print["问题数:" <> ToString[len] <> ";" <> "有回答的问题:" <> ToString[lenTotal] <> 
+  ";" <> "回答数:" <> ToString[ansTotal] <> ";" <> "总支持：" <> ToString[supTotal] <>
+   ";" <> "平均回答数：" <> ToString[avgAnsPerQ]]
+
+问题数:16;有回答的问题:7;回答数:9;总支持：2.;平均回答数：0.5625
+
+Export Data
+
+Export The Results
+
+这里修改了输出，改为输出 xlsx 文件
+
+Export["WeekLog" <> ToString[weekLogNum] <> "_Question_" <> 
+  DateString[{"Day", "-", "Month", "-", "Year"}] <> 
+  ".xlsx", gridTable, "XLSX"]
+
+"WeekLog18_Question_02-10-2013.xlsx"
+
+Export["WeekLog" <> ToString[weekLogNum] <> "_Question_" <> 
+  DateString[{"Day", "-", "Month", "-", "Year"}] <> ".csv", gridTable, "CSV"]
+Export["WeekLog" <> ToString[weekLogNum] <> "_Question_" <> 
+  DateString[{"Day", "-", "Month", "-", "Year"}] <> ".png", weeklogQTable]
+
+"WeekLog18_Question_02-10-2013.csv"
+
+"WeekLog18_Question_02-10-2013.png"
+
+(*
+Export["Export/"<>"WeekLog"<>ToString[weekLogNum]<>"/"<>"WeekLog"<>ToString[\
+weekLogNum]<>"_Question_"<>DateString[{"Day","-","Month","-","Year"}]<>".\
+html",weeklogQTable]
+Export["Export/"<>"WeekLog"<>ToString[weekLogNum]<>"/"<>"WeekLog"<>ToString[\
+weekLogNum]<>"_Answer_"<>DateString[{"Day","-","Month","-","Year"}]<>".html",\
+weeklogATable]
+*)
